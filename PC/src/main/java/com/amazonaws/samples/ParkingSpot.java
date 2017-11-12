@@ -1,4 +1,4 @@
-// Created by Austin Patel
+package com.amazonaws.samples;// Created by Austin Patel
 // 10/21/2017
 
 public class ParkingSpot {
@@ -42,6 +42,10 @@ public class ParkingSpot {
 
     public void setH(int h) {
         this.h = h;
+    }
+
+    public String toString() {
+        return (new int[]{x, y, w, h}).toString();
     }
 
 }
