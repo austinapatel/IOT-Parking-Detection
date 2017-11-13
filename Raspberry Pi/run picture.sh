@@ -1,0 +1,1 @@
+python picture.py -e a3n0k0bt8juhhp.iot.us-west-2.amazonaws.com -r "/home/pi/Desktop/IOT-Parking-Detection/Raspberry Pi/MQTT Certificates/rootCA.pem" -c "/home/pi/Desktop/IOT-Parking-Detection/Raspberry Pi/MQTT Certificates/f227aa0143-certificate.pem.crt" -k "/home/pi/Desktop/IOT-Parking-Detection/Raspberry Pi/MQTT Certificates/f227aa0143-private.pem.key"
