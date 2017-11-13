@@ -13,6 +13,7 @@ package com.amazonaws.samples;/*
  * permissions and limitations under the License.
  */
 
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -54,6 +55,18 @@ import org.json.JSONObject;
  */
 public class S3Sample {
 
+    private static AmazonS3 s3;
+    private static String bucketName, key;
+
+    public static void init() {
+        AmazonS3 s3 = new AmazonS3Client();
+        Region usWest2 = Region.getRegion(Regions.US_WEST_2);
+        s3.setRegion(usWest2);
+
+        S3Sample.bucketName = "iot-parking";
+        S3Sample.key = "parking-spots";
+    }
+
     public static void upload_parking_spots(ArrayList<ParkingSpot> spots) throws IOException {
         /*
          * Create your credentials file at ~/.aws/credentials (C:\Users\USER_NAME\.aws\credentials for Windows users)
@@ -63,17 +76,6 @@ public class S3Sample {
          * aws_access_key_id = YOUR_ACCESS_KEY_ID
          * aws_secret_access_key = YOUR_SECRET_ACCESS_KEY
          */
-
-        AmazonS3 s3 = new AmazonS3Client();
-        Region usWest2 = Region.getRegion(Regions.US_WEST_2);
-        s3.setRegion(usWest2);
-
-        String bucketName = "iot-parking";
-        String key = "parking-spots";
-
-        System.out.println("===========================================");
-        System.out.println("Getting Started with Amazon S3");
-        System.out.println("===========================================\n");
 
         try {
             /*
@@ -206,15 +208,28 @@ public class S3Sample {
      *
      * @throws IOException
      */
-    private static void displayTextInputStream(InputStream input) throws IOException {
+    private static String getTextInputStream(InputStream input) throws IOException {
+        String result = "";
         BufferedReader reader = new BufferedReader(new InputStreamReader(input));
         while (true) {
             String line = reader.readLine();
             if (line == null) break;
 
-            System.out.println("    " + line);
+            result += line;
         }
-        System.out.println();
+        return result;
+    }
+
+    public static Image getImage() {
+        System.out.println("Getting a new parking image");
+        S3Object object = s3.getObject(new GetObjectRequest(bucketName, key));
+        System.out.println("Content-Type: "  + object.getObjectMetadata().getContentType());
+        try {
+            String encoded = getTextInputStream(object.getObjectContent());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }
