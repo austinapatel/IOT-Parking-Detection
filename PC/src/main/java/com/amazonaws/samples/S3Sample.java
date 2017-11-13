@@ -59,7 +59,7 @@ public class S3Sample {
     private static String bucketName, key;
 
     public static void init() {
-        AmazonS3 s3 = new AmazonS3Client();
+        s3 = new AmazonS3Client();
         Region usWest2 = Region.getRegion(Regions.US_WEST_2);
         s3.setRegion(usWest2);
 
@@ -220,16 +220,16 @@ public class S3Sample {
         return result;
     }
 
-    public static Image getImage() {
-        System.out.println("Getting a new parking image");
-        S3Object object = s3.getObject(new GetObjectRequest(bucketName, key));
-        System.out.println("Content-Type: "  + object.getObjectMetadata().getContentType());
-        try {
-            String encoded = getTextInputStream(object.getObjectContent());
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+//    public static Image getImage() {
+//        System.out.println("Getting a new parking image");
+//        S3Object object = s3.getObject(new GetObjectRequest(bucketName, key));
+//        System.out.println("Content-Type: "  + object.getObjectMetadata().getContentType());
+//        try {
+//            String encoded = getTextInputStream(object.getObjectContent());
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 }

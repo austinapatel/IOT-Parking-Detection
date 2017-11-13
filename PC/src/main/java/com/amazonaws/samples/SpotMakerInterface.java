@@ -19,6 +19,7 @@ public class SpotMakerInterface extends JFrame {
     private JButton deleteSpotButton;
 
     public static void main(String[] args) {
+        S3Sample.init();
         new SpotMakerInterface();
     }
 
