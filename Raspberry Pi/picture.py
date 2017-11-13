@@ -106,4 +106,4 @@ while True:
         print(message)
         myAWSIoTMQTTClient.publish(topic, message, 1)
 
-    time.sleep(3)
+    time.sleep(15)
