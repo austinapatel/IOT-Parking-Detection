@@ -25,11 +25,14 @@ public class SpotPanel extends JComponent {
 
         setLayout(new BorderLayout());
 
-        try {
-            parkingImage =  new ImageIcon(ImageIO.read(new File("res/top parking.jpg"))).getImage();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+////            parkingImage =  new ImageIcon(ImageIO.read(new File("res/top parking.jpg"))).getImage();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
+        parkingImage = S3Sample.getImage();
+
 
         initMouseListeners();
     }

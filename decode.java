@@ -24,7 +24,8 @@ public class decode {
 	  
 	  public static void main(String[] args)
 	  {
-		  ImageToString();
+//		  ImageToString();
+		  System.out.println("test");
 	  }
 	  
 	  public static void ImageToString()

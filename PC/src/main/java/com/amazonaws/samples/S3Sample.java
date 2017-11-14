@@ -14,6 +14,7 @@ package com.amazonaws.samples;/*
  */
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -57,6 +58,11 @@ public class S3Sample {
 
     private static AmazonS3 s3;
     private static String bucketName, key;
+
+    public static void main(String[] args) {
+        init();
+        getImage();
+    }
 
     public static void init() {
         s3 = new AmazonS3Client();
@@ -220,16 +226,21 @@ public class S3Sample {
         return result;
     }
 
-//    public static Image getImage() {
-//        System.out.println("Getting a new parking image");
-//        S3Object object = s3.getObject(new GetObjectRequest(bucketName, key));
-//        System.out.println("Content-Type: "  + object.getObjectMetadata().getContentType());
-//        try {
-//            String encoded = getTextInputStream(object.getObjectContent());
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
+    public static BufferedImage getImage() {
+        System.out.println("Getting a new parking image");
+        S3Object object = s3.getObject(new GetObjectRequest(bucketName, "image"));
+        System.out.println("Content-Type: "  + object.getObjectMetadata().getContentType());
+        try {
+            String encoded = getTextInputStream(object.getObjectContent());
+            System.out.println(encoded);
+
+            return Decode.StringToImage(encoded);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 
 }
