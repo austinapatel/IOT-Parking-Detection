@@ -1,3 +1,5 @@
+package com.amazonaws.samples;
+
 
 
 import java.io.BufferedReader;
