@@ -87,8 +87,8 @@ myAWSIoTMQTTClient.configureConnectDisconnectTimeout(10)  # 10 sec
 myAWSIoTMQTTClient.configureMQTTOperationTimeout(5)  # 5 sec
 
 # Connect and subscribe to AWS IoT
-myAWSIoTMQTTClient.connect()
-myAWSIoTMQTTClient.subscribe(topic, 1, customCallback)
+myAWSIoTMQTTClient.connect(keepalive=60)
+# myAWSIoTMQTTClient.subscribe(topic, 1, customCallback)
 time.sleep(2)
 
 import base64
@@ -103,6 +103,6 @@ while True:
     with open(path, "rb") as imageFile:
         message = base64.b64encode(imageFile.read()).decode("utf-8")
         print(message)
-        myAWSIoTMQTTClient.publish(topic, 'test', 1)
+        myAWSIoTMQTTClient.publish(topic, message[:10], 1)
 
     time.sleep(1)
