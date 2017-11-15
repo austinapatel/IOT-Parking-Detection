@@ -93,7 +93,6 @@ time.sleep(2)
 
 import base64
 from picamera import PiCamera
-from time import sleep
 camera = PiCamera()
 path = '/home/pi/Desktop/image.jpg'
 
@@ -104,6 +103,6 @@ while True:
     with open(path, "rb") as imageFile:
         message = base64.b64encode(imageFile.read()).decode("utf-8")
         print(message)
-        myAWSIoTMQTTClient.publish(topic, message   , 1)
+        myAWSIoTMQTTClient.publish(topic, 'test', 1)
 
     time.sleep(1)
