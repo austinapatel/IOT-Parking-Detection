@@ -87,7 +87,7 @@ myAWSIoTMQTTClient.configureConnectDisconnectTimeout(10)  # 10 sec
 myAWSIoTMQTTClient.configureMQTTOperationTimeout(5)  # 5 sec
 
 # Connect and subscribe to AWS IoT
-myAWSIoTMQTTClient.connect(keepalive=60)
+myAWSIoTMQTTClient.connect()
 # myAWSIoTMQTTClient.subscribe(topic, 1, customCallback)
 time.sleep(2)
 
