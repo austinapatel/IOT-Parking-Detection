@@ -229,12 +229,15 @@ public class S3Sample {
     public static BufferedImage getImage() {
         System.out.println("Getting a new parking image");
         S3Object object = s3.getObject(new GetObjectRequest(bucketName, "image"));
+        S3Object object2 = s3.getObject(new GetObjectRequest(bucketName, "image2"));
         System.out.println("Content-Type: "  + object.getObjectMetadata().getContentType());
         try {
-            String encoded = getTextInputStream(object.getObjectContent());
-            System.out.println(encoded);
+            String encoded1 = getTextInputStream(object.getObjectContent());
+            String encoded2 = getTextInputStream(object2.getObjectContent());
+            String message = encoded1 + encoded2;
+            System.out.println(message);
 
-            return Decode.StringToImage(encoded);
+            return Decode.StringToImage(message);
 
         } catch (IOException e) {
             e.printStackTrace();
