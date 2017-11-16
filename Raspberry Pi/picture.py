@@ -26,7 +26,7 @@ import datetime
 # Custom MQTT message callback
 def customCallback(client, userdata, message):
     print("Received a new message: ")
-    print(message.payload)
+    print(message.payload[:10])
     print("from topic: ")
     print(message.topic)
     print("--------------\n\n")
@@ -89,7 +89,8 @@ myAWSIoTMQTTClient.configureMQTTOperationTimeout(5)  # 5 sec
 
 # Connect and subscribe to AWS IoT
 myAWSIoTMQTTClient.connect(64)
-myAWSIoTMQTTClient.subscribe(topic, 1, customCallback)
+myAWSIoTMQTTClient.subscribe("my/topic", 1, customCallback)
+myAWSIoTMQTTClient.subscribe("my/topic1", 1, customCallback)
 time.sleep(2)
 
 import base64
@@ -117,3 +118,5 @@ while a < 5:
 
     time.sleep(15)
     a += 1
+
+myAWSIoTMQTTClient.disconnect()
