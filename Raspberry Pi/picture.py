@@ -94,7 +94,6 @@ time.sleep(2)
 import base64
 from picamera import PiCamera
 camera = PiCamera()
-camera.brightness = 75
 path = '/home/pi/Desktop/image.jpg'
 
 # Publish to the same topic in a loop forever
