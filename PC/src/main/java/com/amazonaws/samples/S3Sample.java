@@ -42,6 +42,8 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.imageio.ImageIO;
+
 /**
  * This sample demonstrates how to make basic requests to Amazon S3 using
  * the AWS SDK for Java.
@@ -237,7 +239,11 @@ public class S3Sample {
             String message = encoded1 + encoded2;
             System.out.println(message);
 
-            return Decode.StringToImage(message);
+            BufferedImage image = ImageIO.read(new File("res/top parking.jpg"));
+
+
+//            return ImageOperations.Threshold(Decode.StringToImage(message), 10);
+            return image;
 
         } catch (IOException e) {
             e.printStackTrace();

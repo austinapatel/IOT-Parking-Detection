@@ -7,6 +7,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ public class SpotPanel extends JComponent {
 
     private int startX, startY, curX, curY;
     private ArrayList<ParkingSpot> spots = new ArrayList<>();
-    private Image parkingImage;
+    private BufferedImage parkingImage, parkingImage_gray;
     private boolean valid;
     private SpotMakerInterface frame;
     private int selectedIndex = -1;
@@ -35,6 +36,8 @@ public class SpotPanel extends JComponent {
 //        }
 
         parkingImage = S3Sample.getImage();
+        parkingImage_gray = ImageOperations.Threshold(parkingImage, 120);
+
 
         Timer timer = new Timer();
 
@@ -113,6 +116,10 @@ public class SpotPanel extends JComponent {
         });
     }
 
+    public void update() {
+        repaint();
+    }
+
     public void setSelectedIndex(int selectedIndex) {
         this.selectedIndex = selectedIndex;
         repaint();
@@ -140,7 +147,7 @@ public class SpotPanel extends JComponent {
 
         ParkingSpot curSpot = new ParkingSpot(startX, startY, curX, curY);
         if (valid) {
-            g.setColor(Color.GREEN);
+            g.setColor(Color.MAGENTA);
             g.drawRect(curSpot.getX(), curSpot.getY(), curSpot.getW(), curSpot.getH());
         }
 
@@ -149,8 +156,35 @@ public class SpotPanel extends JComponent {
 
             if (i == selectedIndex)
                 g.setColor(Color.BLUE);
-            else
-                g.setColor(Color.RED);
+            else {
+                int total_space = spot.getW() * spot.getH();
+                int filled_area = 0;
+
+                System.out.println(spot.getX() + ", " + spot.getY() + "    " + spot.getW() + ", " + spot.getH());
+
+                for (int w = 0; w < spot.getW(); w++)
+                    for (int h = 0; h < spot.getH(); h++) {
+                        int rgb = parkingImage_gray.getRGB(spot.getX() + w, spot.getY() + h);
+                        int red = (rgb >> 16) & 0xFF;
+                        int green = (rgb >> 8) & 0xFF;
+                        int blue = (rgb & 0xFF);
+                        int gray = (red + green + blue) / 3;
+
+//                        System.out.println(gray);
+
+                        if (gray == 0)
+                            filled_area += 1;
+                    }
+
+                double percent_filled = (double) filled_area / (double) total_space;
+
+                System.out.println(percent_filled);
+
+                if (percent_filled > 0.2)
+                    g.setColor(Color.GREEN);
+                else
+                    g.setColor(Color.RED);
+            }
 
             g.drawRect(spot.getX(), spot.getY(), spot.getW(), spot.getH());
         }
