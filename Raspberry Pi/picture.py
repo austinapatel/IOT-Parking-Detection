@@ -1,3 +1,4 @@
+
 '''
 /*
  * Copyright 2010-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
@@ -94,11 +95,13 @@ time.sleep(2)
 import base64
 from picamera import PiCamera
 camera = PiCamera()
-camera.resolution = (2592, 1944)
+
+camera.resolution = (200, 200)
 path = '/home/pi/Desktop/image.jpg'
 
 # Publish to the same topic in a loop forever
-while True:
+a = 0
+while a < 5:
     camera.capture(path)
 
     with open(path, "rb") as imageFile:
@@ -106,7 +109,8 @@ while True:
         print(message)
 
 
-        myAWSIoTMQTTClient.publish("my/topic", message, 0)
+        myAWSIoTMQTTClient.publish("my/topic", message, 1)
 	# time.sleep(15)
 
-    time.sleep(5)
+    time.sleep(15)
+    a += 1
