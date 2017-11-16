@@ -1,6 +1,6 @@
 #
 #/*
-# * Copyright 2010-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# * Copyright 2010-2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # *
 # * Licensed under the Apache License, Version 2.0 (the "License").
 # * You may not use this file except in compliance with the License.
@@ -14,22 +14,20 @@
 # * permissions and limitations under the License.
 # */
 
-from AWSIoTPythonSDK.core.util.providers import CertificateCredentialsProvider
-from AWSIoTPythonSDK.core.util.providers import IAMCredentialsProvider
-from AWSIoTPythonSDK.core.util.providers import EndpointProvider
-from AWSIoTPythonSDK.core.protocol.mqtt_core import MqttCore
+# import mqttCore
+import AWSIoTPythonSDK.core.protocol.mqttCore as mqttCore
+# import shadowManager
 import AWSIoTPythonSDK.core.shadow.shadowManager as shadowManager
+# import deviceShadow
 import AWSIoTPythonSDK.core.shadow.deviceShadow as deviceShadow
-
-
 # Constants
 # - Protocol types:
 MQTTv3_1 = 3
 MQTTv3_1_1 = 4
-
+# - OfflinePublishQueueing drop behavior:
 DROP_OLDEST = 0
 DROP_NEWEST = 1
-
+#
 
 class AWSIoTMQTTClient:
 
@@ -80,13 +78,14 @@ class AWSIoTMQTTClient:
 
         **Returns**
 
-        :code:`AWSIoTPythonSDK.MQTTLib.AWSIoTMQTTClient` object
+        AWSIoTPythonSDK.MQTTLib.AWSIoTMQTTClient object
 
         """
-        self._mqtt_core = MqttCore(clientID, cleanSession, protocolType, useWebsocket)
+        # mqttCore(clientID, cleanSession, protocol, srcLogManager, srcUseWebsocket=False)
+        self._mqttCore = mqttCore.mqttCore(clientID, cleanSession, protocolType, useWebsocket)
 
     # Configuration APIs
-    def configureLastWill(self, topic, payload, QoS, retain=False):
+    def configureLastWill(self, topic, payload, QoS):
         """
         **Description**
 
@@ -111,7 +110,8 @@ class AWSIoTMQTTClient:
         None
 
         """
-        self._mqtt_core.configure_last_will(topic, payload, QoS, retain)
+        # mqttCore.setLastWill(srcTopic, srcPayload, srcQos)
+        self._mqttCore.setLastWill(topic, payload, QoS)
 
     def clearLastWill(self):
         """
@@ -134,7 +134,8 @@ class AWSIoTMQTTClient:
         None
         
         """
-        self._mqtt_core.clear_last_will()
+        #mqttCore.clearLastWill()
+        self._mqttCore.clearLastWill()
 
     def configureEndpoint(self, hostName, portNumber):
         """
@@ -161,10 +162,8 @@ class AWSIoTMQTTClient:
         None
 
         """
-        endpoint_provider = EndpointProvider()
-        endpoint_provider.set_host(hostName)
-        endpoint_provider.set_port(portNumber)
-        self._mqtt_core.configure_endpoint(endpoint_provider)
+        # mqttCore.configEndpoint(srcHost, srcPort)
+        self._mqttCore.configEndpoint(hostName, portNumber)
 
     def configureIAMCredentials(self, AWSAccessKeyID, AWSSecretAccessKey, AWSSessionToken=""):
         """
@@ -197,11 +196,8 @@ class AWSIoTMQTTClient:
         None
 
         """
-        iam_credentials_provider = IAMCredentialsProvider()
-        iam_credentials_provider.set_access_key_id(AWSAccessKeyID)
-        iam_credentials_provider.set_secret_access_key(AWSSecretAccessKey)
-        iam_credentials_provider.set_session_token(AWSSessionToken)
-        self._mqtt_core.configure_iam_credentials(iam_credentials_provider)
+        # mqttCore.configIAMCredentials(srcAWSAccessKeyID, srcAWSSecretAccessKey, srcAWSSessionToken)
+        self._mqttCore.configIAMCredentials(AWSAccessKeyID, AWSSecretAccessKey, AWSSessionToken)
 
     def configureCredentials(self, CAFilePath, KeyPath="", CertificatePath=""):  # Should be good for MutualAuth certs config and Websocket rootCA config
         """
@@ -228,11 +224,8 @@ class AWSIoTMQTTClient:
         None
 
         """
-        cert_credentials_provider = CertificateCredentialsProvider()
-        cert_credentials_provider.set_ca_path(CAFilePath)
-        cert_credentials_provider.set_key_path(KeyPath)
-        cert_credentials_provider.set_cert_path(CertificatePath)
-        self._mqtt_core.configure_cert_credentials(cert_credentials_provider)
+        # mqttCore.configCredentials(srcCAFile, srcKey, srcCert)
+        self._mqttCore.configCredentials(CAFilePath, KeyPath, CertificatePath)
 
     def configureAutoReconnectBackoffTime(self, baseReconnectQuietTimeSecond, maxReconnectQuietTimeSecond, stableConnectionTimeSecond):
         """
@@ -263,14 +256,15 @@ class AWSIoTMQTTClient:
         None
 
         """
-        self._mqtt_core.configure_reconnect_back_off(baseReconnectQuietTimeSecond, maxReconnectQuietTimeSecond, stableConnectionTimeSecond)
+        # mqttCore.setBackoffTime(srcBaseReconnectTimeSecond, srcMaximumReconnectTimeSecond, srcMinimumConnectTimeSecond)
+        self._mqttCore.setBackoffTime(baseReconnectQuietTimeSecond, maxReconnectQuietTimeSecond, stableConnectionTimeSecond)
 
     def configureOfflinePublishQueueing(self, queueSize, dropBehavior=DROP_NEWEST):
         """
         **Description**
 
-        Used to configure the queue size and drop behavior for the offline requests queueing. Should be
-        called before connect. Queueable offline requests include publish, subscribe and unsubscribe.
+        Used to configure the queue size and drop behavior for the offline publish requests queueing. Should be 
+        called before connect.
 
         **Syntax**
 
@@ -288,15 +282,15 @@ class AWSIoTMQTTClient:
          If set to 0, the queue is disabled. If set to -1, the queue size is set to be infinite.
 
         *dropBehavior* - the type of drop behavior when the queue is full.
-         Could be :code:`AWSIoTPythonSDK.core.util.enums.DropBehaviorTypes.DROP_OLDEST` or
-         :code:`AWSIoTPythonSDK.core.util.enums.DropBehaviorTypes.DROP_NEWEST`.
+         Could be :code:`AWSIoTPythonSDK.MQTTLib.DROP_OLDEST` or :code:`AWSIoTPythonSDK.MQTTLib.DROP_NEWEST`.
 
         **Returns**
 
         None
 
         """
-        self._mqtt_core.configure_offline_requests_queue(queueSize, dropBehavior)
+        # mqttCore.setOfflinePublishQueueing(srcQueueSize, srcDropBehavior=mqtt.MSG_QUEUEING_DROP_NEWEST)
+        self._mqttCore.setOfflinePublishQueueing(queueSize, dropBehavior)
 
     def configureDrainingFrequency(self, frequencyInHz):
         """
@@ -326,7 +320,8 @@ class AWSIoTMQTTClient:
         None
 
         """
-        self._mqtt_core.configure_draining_interval_sec(1/float(frequencyInHz))
+        # mqttCore.setDrainingIntervalSecond(srcDrainingIntervalSecond)
+        self._mqttCore.setDrainingIntervalSecond(1/float(frequencyInHz))
 
     def configureConnectDisconnectTimeout(self, timeoutSecond):
         """
@@ -351,7 +346,8 @@ class AWSIoTMQTTClient:
         None
 
         """
-        self._mqtt_core.configure_connect_disconnect_timeout_sec(timeoutSecond)
+        # mqttCore.setConnectDisconnectTimeoutSecond(srcConnectDisconnectTimeout)
+        self._mqttCore.setConnectDisconnectTimeoutSecond(timeoutSecond)
 
     def configureMQTTOperationTimeout(self, timeoutSecond):
         """
@@ -376,14 +372,15 @@ class AWSIoTMQTTClient:
         None
 
         """
-        self._mqtt_core.configure_operation_timeout_sec(timeoutSecond)
+        # mqttCore.setMQTTOperationTimeoutSecond(srcMQTTOperationTimeout)
+        self._mqttCore.setMQTTOperationTimeoutSecond(timeoutSecond)
 
     # MQTT functionality APIs
     def connect(self, keepAliveIntervalSecond=30):
         """
         **Description**
 
-        Connect to AWS IoT, with user-specific keepalive interval configuration.
+        Connect to AWS IoT, with user-specific keeoalive interval configuration.
 
         **Syntax**
 
@@ -404,45 +401,8 @@ class AWSIoTMQTTClient:
         True if the connect attempt succeeded. False if failed.
 
         """
-        self._load_callbacks()
-        return self._mqtt_core.connect(keepAliveIntervalSecond)
-
-    def connectAsync(self, keepAliveIntervalSecond=30, ackCallback=None):
-        """
-        **Description**
-
-        Connect asynchronously to AWS IoT, with user-specific keepalive interval configuration and CONNACK callback.
-
-        **Syntax**
-
-        .. code:: python
-
-          # Connect to AWS IoT with default keepalive set to 30 seconds and a custom CONNACK callback
-          myAWSIoTMQTTClient.connectAsync(ackCallback=my_connack_callback)
-          # Connect to AWS IoT with default keepalive set to 55 seconds and a custom CONNACK callback
-          myAWSIoTMQTTClient.connectAsync(keepAliveInternvalSecond=55, ackCallback=myConnackCallback)
-
-        **Parameters**
-
-        *keepAliveIntervalSecond* - Time in seconds for interval of sending MQTT ping request.
-        Default set to 30 seconds.
-
-        *ackCallback* - Callback to be invoked when the client receives a CONNACK. Should be in form
-        :code:`customCallback(mid, data)`, where :code:`mid` is the packet id for the connect request
-        and :code:`data` is the connect result code.
-
-        **Returns**
-
-        Connect request packet id, for tracking purpose in the corresponding callback.
-
-        """
-        self._load_callbacks()
-        return self._mqtt_core.connect_async(keepAliveIntervalSecond, ackCallback)
-
-    def _load_callbacks(self):
-        self._mqtt_core.on_online = self.onOnline
-        self._mqtt_core.on_offline = self.onOffline
-        self._mqtt_core.on_message = self.onMessage
+        # mqttCore.connect(keepAliveInterval=30)
+        return self._mqttCore.connect(keepAliveIntervalSecond)
 
     def disconnect(self):
         """
@@ -465,32 +425,8 @@ class AWSIoTMQTTClient:
         True if the disconnect attempt succeeded. False if failed.
 
         """
-        return self._mqtt_core.disconnect()
-
-    def disconnectAsync(self, ackCallback=None):
-        """
-        **Description**
-
-        Disconnect asynchronously to AWS IoT.
-
-        **Syntax**
-
-        .. code:: python
-
-          myAWSIoTMQTTClient.disconnectAsync(ackCallback=myDisconnectCallback)
-
-        **Parameters**
-
-        *ackCallback* - Callback to be invoked when the client finishes sending disconnect and internal clean-up.
-        Should be in form :code:`customCallback(mid, data)`, where :code:`mid` is the packet id for the disconnect
-        request and :code:`data` is the disconnect result code.
-
-        **Returns**
-
-        Disconnect request packet id, for tracking purpose in the corresponding callback.
-
-        """
-        return self._mqtt_core.disconnect_async(ackCallback)
+        # mqttCore.disconnect()
+        return self._mqttCore.disconnect()
 
     def publish(self, topic, payload, QoS):
         """
@@ -502,7 +438,7 @@ class AWSIoTMQTTClient:
 
         .. code:: python
 
-          # Publish a QoS0 message "myPayload" to topic "myTopic"
+          # Publish a QoS0 message "myPayload" to topic "myToppic"
           myAWSIoTMQTTClient.publish("myTopic", "myPayload", 0)
           # Publish a QoS1 message "myPayloadWithQos1" to topic "myTopic/sub"
           myAWSIoTMQTTClient.publish("myTopic/sub", "myPayloadWithQos1", 1)
@@ -520,41 +456,8 @@ class AWSIoTMQTTClient:
         True if the publish request has been sent to paho. False if the request did not reach paho.
 
         """
-        return self._mqtt_core.publish(topic, payload, QoS, False)  # Disable retain for publish by now
-
-    def publishAsync(self, topic, payload, QoS, ackCallback=None):
-        """
-        **Description**
-
-        Publish a new message asynchronously to the desired topic with QoS and PUBACK callback. Note that the ack
-        callback configuration for a QoS0 publish request will be ignored as there are no PUBACK reception.
-
-        **Syntax**
-
-        .. code:: python
-
-          # Publish a QoS0 message "myPayload" to topic "myTopic"
-          myAWSIoTMQTTClient.publishAsync("myTopic", "myPayload", 0)
-          # Publish a QoS1 message "myPayloadWithQos1" to topic "myTopic/sub", with custom PUBACK callback
-          myAWSIoTMQTTClient.publishAsync("myTopic/sub", "myPayloadWithQos1", 1, ackCallback=myPubackCallback)
-
-        **Parameters**
-
-        *topic* - Topic name to publish to.
-
-        *payload* - Payload to publish.
-
-        *QoS* - Quality of Service. Could be 0 or 1.
-
-        *ackCallback* - Callback to be invoked when the client receives a PUBACK. Should be in form
-        :code:`customCallback(mid)`, where :code:`mid` is the packet id for the disconnect request.
-
-        **Returns**
-
-        Publish request packet id, for tracking purpose in the corresponding callback.
-
-        """
-        return self._mqtt_core.publish_async(topic, payload, QoS, False, ackCallback)
+        # mqttCore.publish(topic, payload, qos, retain)
+        return self._mqttCore.publish(topic, payload, QoS, False)  # Disable retain for publish by now
 
     def subscribe(self, topic, QoS, callback):
         """
@@ -586,49 +489,14 @@ class AWSIoTMQTTClient:
         True if the subscribe attempt succeeded. False if failed.
 
         """
-        return self._mqtt_core.subscribe(topic, QoS, callback)
-
-    def subscribeAsync(self, topic, QoS, ackCallback=None, messageCallback=None):
-        """
-        **Description**
-
-        Subscribe to the desired topic and register a message callback with SUBACK callback.
-
-        **Syntax**
-
-        .. code:: python
-
-          # Subscribe to "myTopic" with QoS0, custom SUBACK callback and a message callback
-          myAWSIoTMQTTClient.subscribe("myTopic", 0, ackCallback=mySubackCallback, messageCallback=customMessageCallback)
-          # Subscribe to "myTopic/#" with QoS1, custom SUBACK callback and a message callback
-          myAWSIoTMQTTClient.subscribe("myTopic/#", 1, ackCallback=mySubackCallback, messageCallback=customMessageCallback)
-
-        **Parameters**
-
-        *topic* - Topic name or filter to subscribe to.
-
-        *QoS* - Quality of Service. Could be 0 or 1.
-
-        *ackCallback* - Callback to be invoked when the client receives a SUBACK. Should be in form
-        :code:`customCallback(mid, data)`, where :code:`mid` is the packet id for the disconnect request and
-        :code:`data` is the granted QoS for this subscription.
-
-        *messageCallback* - Function to be called when a new message for the subscribed topic
-        comes in. Should be in form :code:`customCallback(client, userdata, message)`, where
-        :code:`message` contains :code:`topic` and :code:`payload`.
-
-        **Returns**
-
-        Subscribe request packet id, for tracking purpose in the corresponding callback.
-
-        """
-        return self._mqtt_core.subscribe_async(topic, QoS, ackCallback, messageCallback)
+        # mqttCore.subscribe(topic, qos, callback)
+        return self._mqttCore.subscribe(topic, QoS, callback)
 
     def unsubscribe(self, topic):
         """
         **Description**
 
-        Unsubscribe to the desired topic.
+        Unsubscribed to the desired topic.
 
         **Syntax**
 
@@ -645,111 +513,8 @@ class AWSIoTMQTTClient:
         True if the unsubscribe attempt succeeded. False if failed.
 
         """
-        return self._mqtt_core.unsubscribe(topic)
-
-    def unsubscribeAsync(self, topic, ackCallback=None):
-        """
-        **Description**
-
-        Unsubscribe to the desired topic with UNSUBACK callback.
-
-        **Syntax**
-
-        .. code:: python
-
-          myAWSIoTMQTTClient.unsubscribe("myTopic", ackCallback=myUnsubackCallback)
-
-        **Parameters**
-
-        *topic* - Topic name or filter to unsubscribe to.
-
-        *ackCallback* - Callback to be invoked when the client receives a UNSUBACK. Should be in form
-        :code:`customCallback(mid)`, where :code:`mid` is the packet id for the disconnect request.
-
-        **Returns**
-
-        Unsubscribe request packet id, for tracking purpose in the corresponding callback.
-
-        """
-        return self._mqtt_core.unsubscribe_async(topic, ackCallback)
-
-    def onOnline(self):
-        """
-        **Description**
-
-        Callback that gets called when the client is online. The callback registration should happen before calling
-        connect/connectAsync.
-
-        **Syntax**
-
-        .. code:: python
-
-          # Register an onOnline callback
-          myAWSIoTMQTTClient.onOnline = myOnOnlineCallback
-
-        **Parameters**
-
-        None
-
-        **Returns**
-
-        None
-
-        """
-        pass
-
-    def onOffline(self):
-        """
-        **Description**
-
-        Callback that gets called when the client is offline. The callback registration should happen before calling
-        connect/connectAsync.
-
-        **Syntax**
-
-        .. code:: python
-
-          # Register an onOffline callback
-          myAWSIoTMQTTClient.onOffline = myOnOfflineCallback
-
-        **Parameters**
-
-        None
-
-        **Returns**
-
-        None
-
-        """
-        pass
-
-    def onMessage(self, message):
-        """
-        **Description**
-
-        Callback that gets called when the client receives a new message. The callback registration should happen before
-        calling connect/connectAsync. This callback, if present, will always be triggered regardless of whether there is
-        any message callback registered upon subscribe API call. It is for the purpose to aggregating the processing of
-        received messages in one function.
-
-        **Syntax**
-
-        .. code:: python
-
-          # Register an onMessage callback
-          myAWSIoTMQTTClient.onMessage = myOnMessageCallback
-
-        **Parameters**
-
-        *message* - Received MQTT message. It contains the source topic as :code:`message.topic`, and the payload as
-        :code:`message.payload`.
-
-        **Returns**
-
-        None
-
-        """
-        pass
+        # mqttCore.unsubscribe(topic)
+        return self._mqttCore.unsubscribe(topic)
 
 
 class AWSIoTMQTTShadowClient:
@@ -804,10 +569,10 @@ class AWSIoTMQTTShadowClient:
         # AWSIOTMQTTClient instance
         self._AWSIoTMQTTClient = AWSIoTMQTTClient(clientID, protocolType, useWebsocket, cleanSession)
         # Configure it to disable offline Publish Queueing
-        self._AWSIoTMQTTClient.configureOfflinePublishQueueing(0)  # Disable queueing, no queueing for time-sensitive shadow messages
+        self._AWSIoTMQTTClient.configureOfflinePublishQueueing(0)  # Disable queueing, no queueing for time-sentive shadow messages
         self._AWSIoTMQTTClient.configureDrainingFrequency(10)
         # Now retrieve the configured mqttCore and init a shadowManager instance
-        self._shadowManager = shadowManager.shadowManager(self._AWSIoTMQTTClient._mqtt_core)
+        self._shadowManager = shadowManager.shadowManager(self._AWSIoTMQTTClient._mqttCore)
 
     # Configuration APIs
     def configureLastWill(self, topic, payload, QoS):
@@ -928,25 +693,11 @@ class AWSIoTMQTTShadowClient:
         """
         **Description**
 
-        Used to configure the rootCA, private key and certificate files. Should be called before connect.
-
         **Syntax**
-
-        .. code:: python
-
-          myAWSIoTMQTTClient.configureCredentials("PATH/TO/ROOT_CA", "PATH/TO/PRIVATE_KEY", "PATH/TO/CERTIFICATE")
 
         **Parameters**
 
-        *CAFilePath* - Path to read the root CA file. Required for all connection types.
-
-        *KeyPath* - Path to read the private key. Required for X.509 certificate based connection.
-
-        *CertificatePath* - Path to read the certificate. Required for X.509 certificate based connection.
-
         **Returns**
-
-        None
 
         """
         # AWSIoTMQTTClient.configureCredentials
@@ -956,25 +707,21 @@ class AWSIoTMQTTShadowClient:
         """
         **Description**
 
-        Used to configure the auto-reconnect backoff timing. Should be called before connect.
+        Used to configure the rootCA, private key and certificate files. Should be called before connect.
 
         **Syntax**
 
         .. code:: python
 
-          # Configure the auto-reconnect backoff to start with 1 second and use 128 seconds as a maximum back off time.
-          # Connection over 20 seconds is considered stable and will reset the back off time back to its base.
-          myAWSIoTMQTTClient.configureAutoReconnectBackoffTime(1, 128, 20)
+          myAWSIoTMQTTShadowClient.configureCredentials("PATH/TO/ROOT_CA", "PATH/TO/PRIVATE_KEY", "PATH/TO/CERTIFICATE")
 
         **Parameters**
 
-        *baseReconnectQuietTimeSecond* - The initial back off time to start with, in seconds.
-        Should be less than the stableConnectionTime.
+        *CAFilePath* - Path to read the root CA file. Required for all connection types.
 
-        *maxReconnectQuietTimeSecond* - The maximum back off time, in seconds.
+        *KeyPath* - Path to read the private key. Required for X.509 certificate based connection.
 
-        *stableConnectionTimeSecond* - The number of seconds for a connection to last to be considered as stable.
-        Back off time will be reset to base once the connection is stable.
+        *CertificatePath* - Path to read the certificate. Required for X.509 certificate based connection.
 
         **Returns**
 
@@ -1062,12 +809,7 @@ class AWSIoTMQTTShadowClient:
         True if the connect attempt succeeded. False if failed.
 
         """
-        self._load_callbacks()
         return self._AWSIoTMQTTClient.connect(keepAliveIntervalSecond)
-
-    def _load_callbacks(self):
-        self._AWSIoTMQTTClient.onOnline = self.onOnline
-        self._AWSIoTMQTTClient.onOffline = self.onOffline
 
     # End the MQTT connection
     def disconnect(self):
@@ -1161,53 +903,3 @@ class AWSIoTMQTTShadowClient:
         """        
         # Return the internal AWSIoTMQTTClient instance
         return self._AWSIoTMQTTClient
-
-    def onOnline(self):
-        """
-        **Description**
-
-        Callback that gets called when the client is online. The callback registration should happen before calling
-        connect.
-
-        **Syntax**
-
-        .. code:: python
-
-          # Register an onOnline callback
-          myAWSIoTMQTTShadowClient.onOnline = myOnOnlineCallback
-
-        **Parameters**
-
-        None
-
-        **Returns**
-
-        None
-
-        """
-        pass
-
-    def onOffline(self):
-        """
-        **Description**
-
-        Callback that gets called when the client is offline. The callback registration should happen before calling
-        connect.
-
-        **Syntax**
-
-        .. code:: python
-
-          # Register an onOffline callback
-          myAWSIoTMQTTShadowClient.onOffline = myOnOfflineCallback
-
-        **Parameters**
-
-        None
-
-        **Returns**
-
-        None
-
-        """
-        pass
