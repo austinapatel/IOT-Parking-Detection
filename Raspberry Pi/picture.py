@@ -103,7 +103,7 @@ while True:
     with open(path, "rb") as imageFile:
         message = base64.b64encode(imageFile.read()).decode("utf-8")
         print(message)
-        myAWSIoTMQTTClient.publish("my/topic", message, 1)
+        myAWSIoTMQTTClient.publish("my/topic", message, 0)
 	# time.sleep(15)
 
     time.sleep(5)
