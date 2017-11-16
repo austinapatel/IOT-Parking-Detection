@@ -97,13 +97,13 @@ camera = PiCamera()
 path = '/home/pi/Desktop/image.jpg'
 
 # Publish to the same topic in a loop forever
-while True:
-    camera.capture(path)
+# def upload():
+camera.capture(path)
 
-    with open(path, "rb") as imageFile:
-        message = base64.b64encode(imageFile.read()).decode("utf-8")
-        print(message)
-        myAWSIoTMQTTClient.publish("my/topic", message, 1)
-	# time.sleep(15)
+with open(path, "rb") as imageFile:
+    message = base64.b64encode(imageFile.read()).decode("utf-8")
+    print(message)
+    myAWSIoTMQTTClient.publish("my/topic", message, 1)
+# time.sleep(15)
 
-    time.sleep(1)
+# time.sleep(1)
