@@ -1,3 +1,4 @@
+
 '''
 /*
  * Copyright 2010-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
@@ -87,24 +88,29 @@ myAWSIoTMQTTClient.configureConnectDisconnectTimeout(10)  # 10 sec
 myAWSIoTMQTTClient.configureMQTTOperationTimeout(5)  # 5 sec
 
 # Connect and subscribe to AWS IoT
-myAWSIoTMQTTClient.connect()
+myAWSIoTMQTTClient.connect(64)
 myAWSIoTMQTTClient.subscribe(topic, 1, customCallback)
 time.sleep(2)
 
 import base64
 from picamera import PiCamera
 camera = PiCamera()
-camera.brightness = 75
+
+camera.resolution = (200, 200)
 path = '/home/pi/Desktop/image.jpg'
 
 # Publish to the same topic in a loop forever
-while True:
+a = 0
+while a < 5:
     camera.capture(path)
 
     with open(path, "rb") as imageFile:
-        message = base64.b64encode(imageFile.read()).decode("utf-8")
+        message = base64.b64encode(imageFile.read())
         print(message)
-        myAWSIoTMQTTClient.publish("my/topic", message, 0)
+
+
+        myAWSIoTMQTTClient.publish("my/topic", message, 1)
 	# time.sleep(15)
 
-    time.sleep(5)
+    time.sleep(15)
+    a += 1
