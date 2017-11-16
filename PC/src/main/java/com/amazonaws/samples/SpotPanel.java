@@ -10,6 +10,9 @@ import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
+
 
 public class SpotPanel extends JComponent {
 
@@ -33,6 +36,19 @@ public class SpotPanel extends JComponent {
 
         parkingImage = S3Sample.getImage();
 
+        Timer timer = new Timer();
+
+        SpotPanel outside = this;
+
+
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                parkingImage = S3Sample.getImage();
+                outside.repaint();
+                System.out.println("pulled new image");
+            }
+        }, 15*1000, 15*1000);
 
         initMouseListeners();
     }
