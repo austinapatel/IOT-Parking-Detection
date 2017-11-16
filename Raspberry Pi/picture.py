@@ -105,11 +105,14 @@ while a < 5:
     camera.capture(path)
 
     with open(path, "rb") as imageFile:
-        message = base64.b64encode(imageFile.read())
+        raw = base64.b64encode(imageFile.read()).decode('utf-8')
+        image1 = raw[:len(raw) // 2]
+        image2 = raw[len(raw) // 2:]
+        message = image1 + image2
         print(message)
 
-
-        myAWSIoTMQTTClient.publish("my/topic", message, 1)
+        myAWSIoTMQTTClient.publish("my/topic", image1, 1)
+        myAWSIoTMQTTClient.publish("my/topic1", image2, 1)
 	# time.sleep(15)
 
     time.sleep(15)
