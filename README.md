@@ -1,3 +1,8 @@
+# In Brief
+Uses a Raspberry Pi to upload pictures through AWS IoT that a Java program then uses to detect open parking spots.
+Submitted for AWS IoT Challenge 2017
+Devpost submission & Pictures/Video: https://devpost.com/software/iot-parking-detection
+
 # Inspiration
 At the high school we go to, the parking situation is a mess.  Constantly we have to leave school early and sometimes don't even end up with a parking spot.  We thought that if we made a way that people could see how many spaces are open in a parking lot, they would be able to determine their likelihood of getting a parking spot.
 
