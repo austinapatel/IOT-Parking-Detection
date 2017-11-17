@@ -176,9 +176,9 @@ public class SpotPanel extends JPanel {
                 System.out.println(percent_filled);
 
                 if (percent_filled > 0.2)
-                    g.setColor(Color.GREEN);
-                else
                     g.setColor(Color.RED);
+                else
+                    g.setColor(Color.GREEN);
             }
 
             g.drawRect(spot.getX(), spot.getY(), spot.getW(), spot.getH());
