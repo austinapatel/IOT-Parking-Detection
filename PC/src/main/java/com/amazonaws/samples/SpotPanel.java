@@ -1,21 +1,20 @@
-package com.amazonaws.samples;// Created by Austin Patel
+// Created by Austin Patel
 // 10/21/2017
 
-import javax.imageio.ImageIO;
+package com.amazonaws.samples;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
 
-public class SpotPanel extends JComponent {
+public class SpotPanel extends JPanel {
 
     private int startX, startY, curX, curY;
     private ArrayList<ParkingSpot> spots = new ArrayList<>();
@@ -28,30 +27,24 @@ public class SpotPanel extends JComponent {
         this.frame = frame;
 
         setLayout(new BorderLayout());
-
-//        try {
-////            parkingImage =  new ImageIcon(ImageIO.read(new File("res/top parking.jpg"))).getImage();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        int threshold = 120;
 
         parkingImage = S3Sample.getImage();
-        parkingImage_gray = ImageOperations.Threshold(parkingImage, 120);
-
+        parkingImage_gray = ImageOperations.Threshold(parkingImage, threshold);
 
         Timer timer = new Timer();
 
         SpotPanel outside = this;
 
-
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 parkingImage = S3Sample.getImage();
+                parkingImage_gray = ImageOperations.Threshold(parkingImage, threshold);
                 outside.repaint();
                 System.out.println("pulled new image");
             }
-        }, 15*1000, 15*1000);
+        }, 5*1000, 5*1000);
 
         initMouseListeners();
     }
@@ -83,7 +76,7 @@ public class SpotPanel extends JComponent {
             @Override
             public void mouseReleased(MouseEvent e) {
 
-                if (e.getX() <= getWidth() && e.getY() <= getHeight() &&
+                if (e.getX() <= parkingImage.getWidth() && e.getY() <= getHeight() &&
                         e.getX() >= 0 && e.getY() >= 0) {
                     spots.add(new ParkingSpot(startX, startY, e.getX(), e.getY()));
                     frame.refresh();
@@ -126,7 +119,7 @@ public class SpotPanel extends JComponent {
     }
 
     public int getWidth() {
-        return parkingImage.getWidth(null);
+        return parkingImage.getWidth(null) * 2;
     }
 
     public int getHeight() {
@@ -142,6 +135,8 @@ public class SpotPanel extends JComponent {
         Graphics2D g = (Graphics2D) graphics;
 
         g.drawImage(parkingImage, 0, 0, null);
+        System.out.println("Grey " + parkingImage_gray.getWidth());
+//        g.drawImage(parkingImage_gray, 400, 0, null);
 
         g.setStroke(new BasicStroke(4));
 

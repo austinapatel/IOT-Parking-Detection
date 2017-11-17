@@ -116,7 +116,7 @@ while a < 5:
         myAWSIoTMQTTClient.publish("my/topic1", image2, 1)
 	# time.sleep(15)
 
-    time.sleep(15)
+    time.sleep(5)
     a += 1
 
 myAWSIoTMQTTClient.disconnect()

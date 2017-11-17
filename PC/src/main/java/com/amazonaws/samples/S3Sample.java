@@ -239,7 +239,8 @@ public class S3Sample {
             String message = encoded1 + encoded2;
             System.out.println(message);
 
-            BufferedImage image = ImageIO.read(new File("res/top parking.jpg"));
+            BufferedImage image = Decode.StringToImage(message);
+//            BufferedImage sample_image = ImageIO.read(new File("res/top parking.jpg"));
 
 
 //            return ImageOperations.Threshold(Decode.StringToImage(message), 10);

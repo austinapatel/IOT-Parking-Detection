@@ -1,4 +1,4 @@
-// from http://www.samundra.com.np/threshold-image-java-code/104/104
+// slightly modified from http://www.samundra.com.np/threshold-image-java-code/104/104
 
 package com.amazonaws.samples;
 
@@ -21,7 +21,7 @@ import java.awt.image.BufferedImage;
  */
 public class ImageOperations {
 
-    public static BufferedImage Threshold(BufferedImage img,int requiredThresholdValue) {
+    public static BufferedImage Threshold(BufferedImage img, int requiredThresholdValue) {
 
         int height = img.getHeight();
         int width = img.getWidth();
@@ -43,7 +43,7 @@ public class ImageOperations {
                     blue = ImageOperations.getBlue(color);
 
 //					System.out.println("Threshold : " + requiredThresholdValue);
-                    if((red+green+green)/3 < (int) (requiredThresholdValue)) {
+                    if((red+green+blue)/3 < (int) (requiredThresholdValue)) {
                         finalThresholdImage.setRGB(x,y,ImageOperations.mixColor(0, 0,0));
                     }
                     else {

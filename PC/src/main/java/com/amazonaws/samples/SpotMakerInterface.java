@@ -25,8 +25,11 @@ public class SpotMakerInterface extends JFrame {
 
     public SpotMakerInterface() {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setSize(600, 600);
+
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
+
         setTitle("Parking Lot Space Detector");
 
         try {
@@ -41,7 +44,6 @@ public class SpotMakerInterface extends JFrame {
         System.out.println(spotPanel.getWidth() + ", " + spotPanel.getHeight());
         add(spotPanel);
 
-        setSize(spotPanel.getWidth() + 200, spotPanel.getHeight() + 100);
 
         JPanel managerPanel = new JPanel();
         managerPanel.setLayout(new BorderLayout());
@@ -92,6 +94,14 @@ public class SpotMakerInterface extends JFrame {
 
         managerPanel.add(buttonPanel, BorderLayout.SOUTH);
         add(managerPanel, BorderLayout.EAST);
+
+//        JSlider slider = new JSlider(JSlider.HORIZONTAL,
+//                0, 250, 120);
+//        slider.setMajorTickSpacing(25);
+//        slider.setMinorTickSpacing(5);
+//        slider.setPaintTicks(true);
+//        slider.setPaintLabels(true);
+//        add(slider, BorderLayout.SOUTH);
 
         setVisible(true);
     }
