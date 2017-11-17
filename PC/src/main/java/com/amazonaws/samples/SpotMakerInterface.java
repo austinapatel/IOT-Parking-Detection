@@ -25,7 +25,7 @@ public class SpotMakerInterface extends JFrame {
 
     public SpotMakerInterface() {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setSize(600, 600);
+        setSize(1000, 800);
 
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
