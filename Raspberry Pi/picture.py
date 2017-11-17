@@ -97,12 +97,22 @@ import base64
 from picamera import PiCamera
 camera = PiCamera()
 
-camera.resolution = (200, 200)
+
+
+
+
+
+
+
+
+
+
+camera.resolution = (400, 400)
 path = '/home/pi/Desktop/image.jpg'
 
 # Publish to the same topic in a loop forever
 a = 0
-while a < 5:
+while True:
     camera.capture(path)
 
     with open(path, "rb") as imageFile:
