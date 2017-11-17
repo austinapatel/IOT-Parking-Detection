@@ -1,0 +1,1 @@
+this file just makes sures the MQTT Certificates file stays in git so that setup is easier

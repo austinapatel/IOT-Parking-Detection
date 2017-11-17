@@ -1,5 +1,4 @@
 out
-Raspberry Pi\MQTT Certificates\*
 *.crt
 *.key
 *.pem
