@@ -1,7 +1,7 @@
 // Created by Austin Patel
 // 10/21/2017
 
-package com.amazonaws.samples;
+//package com.amazonaws.samples;
 
 import javax.swing.*;
 import java.awt.*;

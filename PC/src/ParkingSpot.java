@@ -1,4 +1,4 @@
-package com.amazonaws.samples;// Created by Austin Patel
+//package com.amazonaws.samples;// Created by Austin Patel
 // 10/21/2017
 
 public class ParkingSpot {

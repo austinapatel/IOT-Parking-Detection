@@ -1,6 +1,6 @@
 // slightly modified from http://www.samundra.com.np/threshold-image-java-code/104/104
 
-package com.amazonaws.samples;
+//package com.amazonaws.samples;
 
 /** Filename : ImageOperations.java **/
 /**
